@@ -31,9 +31,6 @@ Detaylı kullanım kılavuzu için YouTube videomuzu izleyebilirsiniz:
 ### GUI Dosya Ekleme
 ![Dosya Ekleme](ScreenShots/GUIKontrolPaneli.png)
 
-### GUI Çalma Listesi
-![Çalma Listesi](ScreenShots/GUICalmaListesi.png)
-
 ### TUI Menüsü
 ![TUI Menüsü](ScreenShots/TUIMenusu.png)
 
@@ -124,141 +121,6 @@ Scripti çalıştırdığınızda önce arayüz seçim menüsü açılır:
 
 3. **Şarkı Ekleme**: Seçenek 6'yı seçip MP3 dosyasının tam yolunu girin.
 
-## Scriptten Kod Bölümleri
-
-### Süre Hesaplama Fonksiyonu
-
-Script, çalan şarkının süresini gerçek zamanlı hesaplar:
-
-```bash
-gecen_sure_hesapla() {
-    if [ "$DURUM" = "DURDURULDU" ] || [ "$BASLANGIC_ZAMANI" -eq 0 ]; then
-        echo "00:00"
-        return
-    fi
-    
-    local simdi=$(date +%s)
-    local gecen=0
-    
-    if [ "$DURUM" = "DURAKLATILDI" ]; then
-        gecen=$((DURAKLATMA_ZAMANI - BASLANGIC_ZAMANI - TOPLAM_DURAKLATMA))
-    else
-        gecen=$((simdi - BASLANGIC_ZAMANI - TOPLAM_DURAKLATMA))
-    fi
-    
-    [ $gecen -lt 0 ] && gecen=0
-    printf "%02d:%02d" $((gecen / 60)) $((gecen % 60))
-}
-```
-
-Bu fonksiyon:
-- Duraklatma süresini doğru hesaplar
-- MM:SS formatında süre döndürür
-- Negatif değerleri engeller
-
-### Müzik Başlatma Fonksiyonu
-
-```bash
-muzik_baslat() {
-    pkill -x mpg123 2>/dev/null
-    
-    if [ ${#PLAYLIST[@]} -eq 0 ]; then
-        return 1
-    fi
-    
-    DOSYA_YOLU="${PLAYLIST[$SUAN_INDEX]}"
-    
-    if [ ! -f "$DOSYA_YOLU" ]; then
-        return 1
-    fi
-    
-    SUAN_CALAN=$(basename "$DOSYA_YOLU")
-    mpg123 -q "$DOSYA_YOLU" >/dev/null 2>&1 &
-    
-    DURUM="OYNATILIYOR"
-    BASLANGIC_ZAMANI=$(date +%s)
-    TOPLAM_DURAKLATMA=0
-    return 0
-}
-```
-
-Bu fonksiyon:
-- Önceki çalma işlemini durdurur
-- Çalma listesi ve dosya kontrolü yapar
-- `mpg123` ile arka planda çalar
-- Süre değişkenlerini sıfırlar
-
-### Duraklat/Devam Et Fonksiyonu
-
-```bash
-muzik_duraklat_devam() {
-    if pgrep -x mpg123 >/dev/null; then
-        if [ "$DURUM" = "OYNATILIYOR" ]; then
-            pkill -STOP -x mpg123 2>/dev/null
-            DURUM="DURAKLATILDI"
-            DURAKLATMA_ZAMANI=$(date +%s)
-        else
-            pkill -CONT -x mpg123 2>/dev/null
-            DURUM="OYNATILIYOR"
-            local simdi=$(date +%s)
-            TOPLAM_DURAKLATMA=$((TOPLAM_DURAKLATMA + simdi - DURAKLATMA_ZAMANI))
-        fi
-    fi
-}
-```
-
-Bu fonksiyon:
-- `STOP` sinyali ile duraklatır
-- `CONT` sinyali ile devam ettirir
-- Duraklatma süresini toplam süreye ekler
-
-### GUI Kontrol Paneli (Otomatik Yenileme)
-
-```bash
-gui_kontrol_paneli() {
-    while true; do
-        local gecen_sure=$(gecen_sure_hesapla)
-        
-        yad --form \
-            --title="$PROGRAM_ADI" \
-            --text="<b>$durum_icon $DURUM</b>\n\nŞarkı: $SUAN_CALAN\nSüre: $gecen_sure\nListe: $liste_bilgi" \
-            --timeout=1 \
-            --timeout-indicator=bottom \
-            --button="⏮ Önceki:2" \
-            --button="⏯ Oynat/Pause:3" \
-            # ... diğer butonlar
-        
-        case $exit_code in
-            70) # Timeout - otomatik yenileme
-                if [ "$DURUM" = "OYNATILIYOR" ] && ! pgrep -x mpg123 >/dev/null; then
-                    sonraki_sarki  # Şarkı bitti, sonrakine geç
-                fi
-                ;;
-            # ... diğer durumlar
-        esac
-    done
-}
-```
-
-Bu fonksiyon:
-- Her saniye otomatik yenilenir (`--timeout=1`)
-- Süre ve durum bilgilerini günceller
-- Şarkı bittiğinde otomatik sonrakine geçer
-
-## Değişkenler
-
-Script içinde kullanılan ana değişkenler:
-
-| Değişken | Açıklama |
-|----------|----------|
-| `PLAYLIST` | Şarkı dosya yollarını tutan dizi |
-| `SUAN_INDEX` | Çalınan şarkının indeksi |
-| `DURUM` | Oynatıcının durumu (OYNATILIYOR, DURAKLATILDI, DURDURULDU) |
-| `SUAN_CALAN` | Şu an çalan şarkının adı |
-| `BASLANGIC_ZAMANI` | Şarkının başlama zamanı (Unix timestamp) |
-| `DURAKLATMA_ZAMANI` | Duraklatma anının zamanı |
-| `TOPLAM_DURAKLATMA` | Toplam duraklatma süresi (saniye) |
-
 ## Teknik Detaylar
 
 - **Platform:** Pardus Linux
@@ -279,16 +141,6 @@ Bu araç özellikle Pardus işletim sistemi için optimize edilmiştir ve Pardus
 - Önceki şarkıya geçerken şarkı 5 saniyeden az çalındıysa başa sarılır
 
 ## Sorun Giderme
-
-### Ses Çıkmıyor
-
-```bash
-# ALSA ses sistemini kontrol edin
-alsamixer
-
-# Ses seviyesini kontrol edin
-amixer
-```
 
 ### YAD Kurulu Değil
 
