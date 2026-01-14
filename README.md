@@ -23,19 +23,19 @@ Detaylı kullanım kılavuzu için YouTube videomuzu izleyebilirsiniz:
 ## Ekran Görüntüleri
 
 ### Arayüz Seçim Menüsü
-![Arayüz Seçimi](screenshots/arayuz-secimi.png)
+![Arayüz Seçimi](ScreenShots/ArayuzSecimMenusu.png)
 
 ### GUI Kontrol Paneli
-![GUI Kontrol Paneli](screenshots/gui-panel.png)
+![GUI Kontrol Paneli](ScreenShots/GUIKontrolPaneli.png)
 
 ### GUI Dosya Ekleme
-![Dosya Ekleme](screenshots/gui-ekle.png)
+![Dosya Ekleme](ScreenShots/GUIKontrolPaneli.png)
 
 ### GUI Çalma Listesi
-![Çalma Listesi](screenshots/gui-liste.png)
+![Çalma Listesi](ScreenShots/GUICalmaListesi.png)
 
 ### TUI Menüsü
-![TUI Menüsü](screenshots/tui-menu.png)
+![TUI Menüsü](ScreenShots/TUIMenusu.png)
 
 ## Gereksinimler
 
