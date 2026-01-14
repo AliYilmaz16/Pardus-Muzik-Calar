@@ -174,7 +174,7 @@ Bu proje Pardus için **Linux Araçları ve Kabuk Programlama** dersi kapsamınd
 
 ## Geliştirici
 
-**[Ali Yılmaz]**  
+**Ali Yılmaz**  
 
 ---
 
