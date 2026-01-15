@@ -55,8 +55,8 @@ sudo apt update && sudo apt install -y mpg123 yad whiptail
 ### Projeyi İndirme
 
 ```bash
-git clone https://github.com/KULLANICI_ADI/pardus-muzik-oynatici.git
-cd pardus-muzik-oynatici
+git clone https://github.com/AliYilmaz16/Pardus-Muzik-Calar.git
+cd Pardus-Muzik-Calar
 chmod +x mpg123-oynatici.sh
 ```
 
